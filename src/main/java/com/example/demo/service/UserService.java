@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.domain.Search;
 import com.example.demo.domain.User;
 import com.example.demo.mapper.UserMapper;
 import com.github.pagehelper.Page;
@@ -26,9 +27,9 @@ public class UserService {
 		return users;
 	}
 	
-	public Page<User> getAllUserPaging (int pageNo, int pageSize) {
+	public Page<User> getAllUserPaging (int pageNo, int pageSize, Search search) {
 		PageHelper.startPage(pageNo, pageSize);
-		Page<User> users = usermapper.findAllPaging();
+		Page<User> users = usermapper.findAllPaging(search);
 		logger.info("[getAllUserPaging] users is {}", users.toString());
 		return users;
 	}

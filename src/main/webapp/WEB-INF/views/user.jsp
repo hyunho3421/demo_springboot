@@ -24,37 +24,16 @@
 			<td><c:out value="${user.age }" /></td>
 		</tr>
 	</table>
-	<button id="delete_${user.id }">삭제</button>
+	<button id="delete" data-id="${user.id }">삭제</button>
 	<button>목록</button>
 </body>
 
 <script type="text/javascript">
-	$(document).on("click", "button[id*=delete_]", function() {
-		var id = this.id.substr('delete_'.length);
+	$(document).on("click", "button[id*=delete]", function() {
+		//var id = this.id.substr('delete_'.length);
+		var id = $(this).data("id");
 		deleteUser(id);
 	});
-	
-	function deleteUserAjax(id) {
-		$.ajax({
-			type: 'POST',
-			url: '/user/ajax/delete',
-			header: {
-				"Content-Type": "application/json",
-	            "X-HTTP-Method-Override": "POST"
-			},
-			data: {
-				"id" : id
-			},
-			success: function(result) {
-			},
-			error: function(xhr) {
-				var code = xhr.status;
-			}
-		});
-
-		//$(location).attr("href", "/user/find/all");
-		location.href = "/user/find/all";
-	}
 	
 	function deleteUser() {
 		var formObj = $("form[role='form']");

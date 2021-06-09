@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.demo.domain.Search;
 import com.example.demo.domain.User;
 import com.example.demo.service.UserService;
 
@@ -45,7 +45,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/ajax/find/all")
-	public ResponseEntity<Map<String, Object>> findAllUser_ajax() {
+	public ResponseEntity<Map<String, Object>> findAllUser_ajax(Search search) {
 		ResponseEntity<Map<String, Object>> entity;
 		
 		List<User> users = userService.getAllUser();
@@ -79,16 +79,7 @@ public class UserController {
 		
 		userService.saveUser(user);
 		
-		List<User> users = userService.getAllUser();
-		
-		users.forEach(x -> {
-			logger.info("user is {}", x.toString());
-		});
-		
-		Map<String, Object> map = new HashMap<>();
-		map.put("users", users);
-
-		entity = new ResponseEntity<>(map, HttpStatus.OK);
+		entity = new ResponseEntity<>(HttpStatus.OK);
 		
 		return entity;
 	}
@@ -100,51 +91,17 @@ public class UserController {
 		
 		userService.saveUser(user);
 		
-		List<User> users = userService.getAllUser();
-		
-		users.forEach(x -> {
-			logger.info("user is {}", x.toString());
-		});
-		
-		Map<String, Object> map = new HashMap<>();
-		map.put("users", users);
-
-		entity = new ResponseEntity<>(map, HttpStatus.OK);
+		entity = new ResponseEntity<>(HttpStatus.OK);
 		
 		return entity;
 	}
 	
-	@PostMapping("/ajax/delete")
-	public ResponseEntity<String> delete_ajax(@RequestParam String id) {
-		logger.info("[delete_ajax] id is {}", id);
-		ResponseEntity<String> entity;
-		
-		userService.deleteById(id);
-		
-		List<User> users = userService.getAllUser();
-		
-		users.forEach(x -> {
-			logger.info("user is {}", x.toString());
-		});
-
-		entity = new ResponseEntity<>("SUCCESS", HttpStatus.OK);
-		
-		return entity;
-	}
 	
 	@PostMapping("/delete")
 	public String deleteUser(String id, Model model) {
 		logger.info("[deleteUser] id is {}", id);
 		
 		userService.deleteById(id);
-		
-		/*
-		 * List<User> users = userService.getAllUser();
-		 * 
-		 * users.forEach(x -> { logger.info("user is {}", x.toString()); });
-		 * 
-		 * model.addAttribute("users", users);
-		 */
 		
 		return "redirect:/user/find/all";
 	}

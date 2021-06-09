@@ -14,7 +14,7 @@
 		ORDER BY create_date ASC
 	</select>
 	
-	<select id="findAllPaging" resultType="User">
+	<select id="findAllPaging" parameterType="Search" resultType="User">
 		SELECT 
 			id,
 			name,
@@ -22,10 +22,20 @@
 			create_date
 		FROM
 			user
+		<if test="content != null">
+			<choose>
+				<when test="keyword.equals('id')">
+				WHERE id like #{content}
+				</when>
+				<when test="keyword.equals('name')">
+				WHERE name like #{content}
+				</when>
+			</choose>
+		</if>
 		ORDER BY create_date ASC
 	</select>
 	
-	<select id="findById" resultType="USER">
+	<select id="findById" resultType="User">
 		SELECT 
 			id,
 			name,

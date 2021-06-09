@@ -4,12 +4,15 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.example.demo.DemoApplication;
+import com.example.demo.domain.Search;
 import com.example.demo.domain.User;
 import com.github.pagehelper.Page;
 
@@ -22,14 +25,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserServiceTest {
 	
+	private Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@Autowired
 	private UserService userService;
 	
 	@Test
 	public void findAllPagingTest() {
-		Page<User> users = userService.getAllUserPaging(1, 2);
+		Search search = new Search();
+		search.setKeyword("id");
+		search.setContent("aaaa");
 		
-		users.forEach(x->log.info(x.toString()));
+		Page<User> users = userService.getAllUserPaging(1, 2, search);
+		
+		users.forEach(x->logger.info(x.toString()));
+		
 	}
 	
 	

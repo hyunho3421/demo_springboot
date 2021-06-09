@@ -16,6 +16,11 @@
 	<table id="user_list">
 	</table>
 
+	<div id="pagination"></div>
+
+	<br/> 
+	검색: <select id="keyword"></select> <input type="text" id="content" value="${search.content }" > <button id="search_button" onclick="ajax_search()">검색</button>
+
 	<h1>ajax save</h1>
 	<form action="/user/save" method="post" id="ajax_user" onsubmit="return false">
 		id : <input type="text" name="id" id="ajax_id" placeholder="id" />
@@ -38,18 +43,57 @@
 	$(document).ready(function () {
 		findUserAll();
 	});
-
+	
 	// 클릭 이벤트 - 동적할당 가능
 	$(document).on("click", "tr[id*=user_detail]", function() {
-		var id = this.id.substr('user_detail_'.length);
+		var id = $(this).data("id");
 		findUser(id);
 	});
 	
-	$(document).on("click", "td[id*=delete_]", function() {
-		var id = this.id.substr('delete_'.length);
-		deleteUser(id);
-	});
+	function init_setting(select_keyword) {
+		var keyword_list = ["id", "name"];
+		
+		for (i=0; i < keyword_list.length; i++) {
+			if (keyword_list[i] == select_keyword)) {
+				// TODO: SELECT 설정
+				$("#keyword").append("<option>" + keyword_list[i] + "</option>");
+			} else {
+				$("#keyword").append("<option>" + keyword_list[i] + "</option>");
+			}
+		}
+		
+	}
  
+	function ajax_search() {
+		var keyword = $("#keyword option:selected").val();
+		var content = $("#content").val();
+		
+		var search = {
+				"keyword" : keyword,
+				"content" : content
+		}
+		
+		console.log("keyword is " + keyword);
+		console.log("content is " + content);
+		
+		$.ajax({
+			type: 'POST',
+			url: '',
+			headers: {
+	            "Content-Type": "application/json",
+	            "X-HTTP-Method-Override": "POST"
+	        },
+			data: JSON.stringify(search),
+			success: function(result) {
+				findUserAll();
+			},
+			error: function(xhr) {
+				var code = xhr.status;
+			}
+		});
+		
+	}
+	
 	function ajax_submit() {
 		var id = $("#ajax_user #ajax_id").val();
 		var name = $("#ajax_user #ajax_name").val();
@@ -63,33 +107,13 @@
 		$.ajax({
 			type: 'POST',
 			url: '/user/ajax/save',
-			 headers: {
+			headers: {
 		            "Content-Type": "application/json",
 		            "X-HTTP-Method-Override": "POST"
 	        },
 			data: JSON.stringify(user),
 			success: function(result) {
-				var html = "";
-				var users = result.users;
-				
-				for(var i=0; i < users.length ; i++) {
-					
-					html += "<tr id='user_detail_" + users[i].id + "'>";
-					html += "<td>" + i + "</td>";
-					html += "<td>" + users[i].id + "</td>";
-					html += "<td>" + users[i].name + "</td>";
-					html += "<td>" + users[i].age + "</td>";
-					html += "<td>" + users[i].age + "</td>";
-					html += "<td>" + getDate(users[i].create_date) + "</td>";
-					
-					html += "</tr>";
-				}
-				
-				$("#user_list").html(html);
-
-				$("#ajax_user #ajax_id").val("");
-				$("#ajax_user #ajax_name").val("");
-				$("#ajax_user #ajax_age").val("");
+				findUserAll();
 			},
 			error: function(xhr) {
 				var code = xhr.status;
@@ -126,7 +150,7 @@
 				
 				for(var i=0; i < users.length ; i++) {
 					
-					html += "<tr id='user_detail_" + users[i].id + "'>";
+					html += "<tr id='user_detail' data-id='" + users[i].id + "'>";
 					html += "<td>" + i + "</td>";
 					html += "<td>" + users[i].id + "</td>";
 					html += "<td>" + users[i].name + "</td>";
@@ -147,6 +171,10 @@
 				var code = xhr.status;
 			}
 		});
+	}
+	
+	function paging() {
+		
 	}
 	
 </script>
