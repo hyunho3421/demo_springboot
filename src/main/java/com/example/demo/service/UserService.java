@@ -17,13 +17,14 @@ import com.github.pagehelper.PageInfo;
 @Service
 public class UserService {
 	
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private UserMapper usermapper;
 	
 	public PageInfo<User> getAllUser (int pageNo, int pageSize, Search search) {
-		List<User> users = usermapper.findAll();
+		PageHelper.startPage(pageNo, pageSize);
+		List<User> users = usermapper.findAll(search);
 		logger.info("[getAllUser] users is {}", users.toString());
 		
 		PageInfo<User> pageInfo = new PageInfo<>(users, 10);

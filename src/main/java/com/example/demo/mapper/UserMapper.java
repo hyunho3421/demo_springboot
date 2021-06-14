@@ -11,7 +11,7 @@ import com.github.pagehelper.PageInfo;
 
 @Mapper
 public interface UserMapper {
-	List<User> findAll();
+	List<User> findAll(Search search);
 	User findById(String id);
 	int save(User user);
 	int deleteById(String id);

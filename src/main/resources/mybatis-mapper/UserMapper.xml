@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.demo.mapper.UserMapper">
-	<select id="findAll" resultType="User">
+	<select id="findAll" resultType="User" parameterType="Search">
 		SELECT 
 			id,
 			name,
@@ -11,13 +11,13 @@
 			create_date
 		FROM
 			user
-		<if test="content != null">
+		<if test="content != null and content != ''">
 			<choose>
 				<when test="keyword.equals('id')">
-				WHERE id like #{content}
+				WHERE id like CONCAT('%',#{content}, '%')
 				</when>
 				<when test="keyword.equals('name')">
-				WHERE name like #{content}
+				WHERE name like CONCAT('%', #{content}, '%')
 				</when>
 			</choose>
 		</if>

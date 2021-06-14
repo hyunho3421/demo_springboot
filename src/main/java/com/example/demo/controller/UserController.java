@@ -31,7 +31,7 @@ public class UserController {
 	
 	@GetMapping("/find/all")
 	public String findAllUser(Model model) {
-		
+
 		return "user_list";
 	}
 	
@@ -41,13 +41,11 @@ public class UserController {
 		
 		logger.info("page : {} / pageSize : {}", search.getPage(), search.getPerPageNum());
 		
-		//List<User> users = userService.getAllUser();
 		PageInfo<User> users = userService.getAllUser(search.getPage(), search.getPerPageNum(), search);
-		
-		logger.info("users is {}", users.toString());
-		
+
 		Map<String, Object> map = new HashMap<>();
 		map.put("users", users);
+		map.put("search", search);
 		entity = new ResponseEntity<>(map, HttpStatus.OK);
 		
 		return entity;

@@ -38,9 +38,22 @@
 		age : <input type="number" name="age" placeholder="age" />
 		<input type="submit" id="fromBtn" value="생성" />
 	</form>	
-	
+
 </body>
 <script type="text/javascript">
+	let search = {
+		"keyword" : "",
+		"content" : "",
+		"page" : 0,
+		"perPageNum" : 10
+	}
+
+	// href 링크 이동 막기
+	// 정의안하면 uri에 #붙음
+	$(document).on('click', 'a[href="#"]', function(e){
+		e.preventDefault();
+	});
+
 	$(document).ready(function () {
 		findUserAll();
 		init_setting();
@@ -48,12 +61,26 @@
 	
 	// 클릭 이벤트 - 동적할당 가능
 	$(document).on("click", "tr[id*=user_detail]", function() {
-		var id = $(this).data("id");
+		let id = $(this).data("id");
 		findUser(id);
 	});
+
+	$(document).on("click", ".paging", function (){
+		let page = $(this).data("page");
+
+		if(page == 'prev') {
+			search.page = search.page - 1;
+		} else if (page == 'next') {
+			search.page = search.page + 1;
+		} else {
+			search.page = page;
+		}
+
+		findUserAll();
+ 	});
 	
 	function init_setting(select_keyword) {
-		var keyword_list = ["id", "name"];
+		let keyword_list = ["id", "name"];
 		
 		for (i=0; i < keyword_list.length; i++) {
 			if (keyword_list[i] == select_keyword) {
@@ -63,44 +90,23 @@
 				$("#keyword").append("<option>" + keyword_list[i] + "</option>");
 			}
 		}
-		
 	}
- 
+
 	function ajax_search() {
-		var keyword = $("#keyword option:selected").val();
-		var content = $("#content").val();
-		
-		var search = {
-				"keyword" : keyword,
-				"content" : content
-		}
-		
-		console.log("keyword is " + keyword);
-		console.log("content is " + content);
-		
-		$.ajax({
-			type: 'POST',
-			url: '',
-			headers: {
-	            "Content-Type": "application/json",
-	            "X-HTTP-Method-Override": "POST"
-	        },
-			data: JSON.stringify(search),
-			success: function(result) {
-				findUserAll();
-			},
-			error: function(xhr) {
-				var code = xhr.status;
-			}
-		});
+		let keyword = $("#keyword option:selected").val();
+		let content = $("#content").val();
+
+		search.keyword = keyword;
+		search.content = content;
+		findUserAll();
 		
 	}
 	
 	function ajax_submit() {
-		var id = $("#ajax_user #ajax_id").val();
-		var name = $("#ajax_user #ajax_name").val();
-		var age = $("#ajax_user #ajax_age").val();
-		var user = {
+		let id = $("#ajax_user #ajax_id").val();
+		let name = $("#ajax_user #ajax_name").val();
+		let age = $("#ajax_user #ajax_age").val();
+		let user = {
 				"id": id,
 				"name": name,
 				"age": age
@@ -118,7 +124,7 @@
 				findUserAll();
 			},
 			error: function(xhr) {
-				var code = xhr.status;
+				let code = xhr.status;
 			}
 		});
 	}
@@ -129,23 +135,16 @@
 	}
 	
 	function getDate(create_date) {
-		var date = new Date(create_date);
-		
-		var year = date.getFullYear();
-		var month = date.getMonth();
-		var day = date.getDate();
+		let date = new Date(create_date);
+
+		let year = date.getFullYear();
+		let month = date.getMonth();
+		let day = date.getDate();
 		
 		return year + "/" + month + "/" + day;
 	}
 	
 	function findUserAll() {
-		var search = {
-				"keyword" : "",
-				"content" : "",
-				"page" : 0,
-				"perPageNum" : 10
-		}
-		
 		$.ajax({
 			type: 'POST',
 			url: '/user/ajax/find/all',
@@ -155,9 +154,10 @@
 	        },
 	        data: JSON.stringify(search),
 			success: function(result) {
-				var html = "";
-				var users = result.users.list;
-				var pageHtml = "";
+				let html = "";
+				let users = result.users.list;
+				let pageInfo = result.users;
+				let pageHtml = "";
 				
 				for(var i=0; i < users.length ; i++) {
 					
@@ -175,15 +175,34 @@
 				$("#user_list").html(html);
 
 				// paging
-				
-				
-				
+				let hasPrev = pageInfo.hasPreviousPage;
+				let hasNext = pageInfo.hasNextPage;
+
+				if (hasPrev) {
+					pageHtml += "<a href='#' class='paging' data-page='prev'> < </a>"
+				}
+
+				for(let i=0; i < pageInfo.pages; i++) {
+					pageHtml += "<a href='#' class='paging' data-page='" + pageInfo.navigatepageNums[i] + "'> " + pageInfo.navigatepageNums[i] + " </a>";
+				}
+
+				if (hasNext) {
+					pageHtml += "<a href='#' class='paging' data-page='next'> > </a>"
+				}
+
+				$("#pagination").html(pageHtml);
+
 				$("#ajax_user #ajax_id").val("");
 				$("#ajax_user #ajax_name").val("");
 				$("#ajax_user #ajax_age").val("");
+
+				search.page = pageInfo.pages;
+				search.perPageNum = pageInfo.pageSize;
+				search.keyword = result.search.keyword;
+				search.content = result.search.content;
 			},
 			error: function(xhr) {
-				var code = xhr.status;
+				let code = xhr.status;
 			}
 		});
 	}
