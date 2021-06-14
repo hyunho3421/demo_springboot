@@ -16,7 +16,8 @@
 	<table id="user_list">
 	</table>
 
-	<div id="pagination"></div>
+	<div id="pagination">
+	</div>
 
 	<br/> 
 	검색: <select id="keyword"></select> <input type="text" id="content" value="${search.content }" > <button id="search_button" onclick="ajax_search()">검색</button>
@@ -42,6 +43,7 @@
 <script type="text/javascript">
 	$(document).ready(function () {
 		findUserAll();
+		init_setting();
 	});
 	
 	// 클릭 이벤트 - 동적할당 가능
@@ -54,7 +56,7 @@
 		var keyword_list = ["id", "name"];
 		
 		for (i=0; i < keyword_list.length; i++) {
-			if (keyword_list[i] == select_keyword)) {
+			if (keyword_list[i] == select_keyword) {
 				// TODO: SELECT 설정
 				$("#keyword").append("<option>" + keyword_list[i] + "</option>");
 			} else {
@@ -137,16 +139,25 @@
 	}
 	
 	function findUserAll() {
+		var search = {
+				"keyword" : "",
+				"content" : "",
+				"page" : 0,
+				"perPageNum" : 10
+		}
+		
 		$.ajax({
 			type: 'POST',
 			url: '/user/ajax/find/all',
-			 headers: {
+			headers: {
 		            "Content-Type": "application/json",
 		            "X-HTTP-Method-Override": "POST"
 	        },
+	        data: JSON.stringify(search),
 			success: function(result) {
 				var html = "";
-				var users = result.users;
+				var users = result.users.list;
+				var pageHtml = "";
 				
 				for(var i=0; i < users.length ; i++) {
 					
@@ -163,6 +174,10 @@
 				
 				$("#user_list").html(html);
 
+				// paging
+				
+				
+				
 				$("#ajax_user #ajax_id").val("");
 				$("#ajax_user #ajax_name").val("");
 				$("#ajax_user #ajax_age").val("");
@@ -171,10 +186,6 @@
 				var code = xhr.status;
 			}
 		});
-	}
-	
-	function paging() {
-		
 	}
 	
 </script>

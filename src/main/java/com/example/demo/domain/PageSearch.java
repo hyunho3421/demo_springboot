@@ -3,10 +3,9 @@ package com.example.demo.domain;
 import lombok.Data;
 
 @Data
-public class Search {
-	private String keyword;
-	private String content;
-	
+public class PageSearch {
 	private int page;
 	private int perPageNum;
+	
 }
+

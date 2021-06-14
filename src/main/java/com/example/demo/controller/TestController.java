@@ -38,16 +38,5 @@ public class TestController {
 		
 		return "test";
 	}
-	
-	@GetMapping("/all")
-	public String getAll() {
-		logger.info("[getAll][/all]");
-		
-		List<User> users = userService.getAllUser();
-		
-		logger.info("[getAll] users is {}", users.toString());
-		
-		return "test";
-	}
 
 }

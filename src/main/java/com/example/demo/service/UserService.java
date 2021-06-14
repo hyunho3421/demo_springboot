@@ -12,6 +12,7 @@ import com.example.demo.domain.User;
 import com.example.demo.mapper.UserMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 @Service
 public class UserService {
@@ -21,17 +22,13 @@ public class UserService {
 	@Autowired
 	private UserMapper usermapper;
 	
-	public List<User> getAllUser () {
+	public PageInfo<User> getAllUser (int pageNo, int pageSize, Search search) {
 		List<User> users = usermapper.findAll();
 		logger.info("[getAllUser] users is {}", users.toString());
-		return users;
-	}
-	
-	public Page<User> getAllUserPaging (int pageNo, int pageSize, Search search) {
-		PageHelper.startPage(pageNo, pageSize);
-		Page<User> users = usermapper.findAllPaging(search);
-		logger.info("[getAllUserPaging] users is {}", users.toString());
-		return users;
+		
+		PageInfo<User> pageInfo = new PageInfo<>(users, 10);
+		
+		return pageInfo;
 	}
 	
 	public User getUserById(String id) {

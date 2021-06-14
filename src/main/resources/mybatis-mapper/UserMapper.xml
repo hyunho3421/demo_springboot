@@ -11,17 +11,6 @@
 			create_date
 		FROM
 			user
-		ORDER BY create_date ASC
-	</select>
-	
-	<select id="findAllPaging" parameterType="Search" resultType="User">
-		SELECT 
-			id,
-			name,
-			age,
-			create_date
-		FROM
-			user
 		<if test="content != null">
 			<choose>
 				<when test="keyword.equals('id')">

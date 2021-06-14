@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -16,11 +15,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.domain.Search;
 import com.example.demo.domain.User;
 import com.example.demo.service.UserService;
+import com.github.pagehelper.PageInfo;
 
 @Controller
 @RequestMapping("/user")
@@ -33,26 +32,19 @@ public class UserController {
 	@GetMapping("/find/all")
 	public String findAllUser(Model model) {
 		
-		List<User> users = userService.getAllUser();
-		
-		users.forEach(x -> {
-			logger.info("user is {}", x.toString());
-		});
-		
-		model.addAttribute("users", users);
-		
 		return "user_list";
 	}
 	
 	@PostMapping("/ajax/find/all")
-	public ResponseEntity<Map<String, Object>> findAllUser_ajax(Search search) {
+	public ResponseEntity<Map<String, Object>> findAllUser_ajax(@RequestBody Search search) {
 		ResponseEntity<Map<String, Object>> entity;
 		
-		List<User> users = userService.getAllUser();
+		logger.info("page : {} / pageSize : {}", search.getPage(), search.getPerPageNum());
 		
-		users.forEach(x -> {
-			logger.info("user is {}", x.toString());
-		});
+		//List<User> users = userService.getAllUser();
+		PageInfo<User> users = userService.getAllUser(search.getPage(), search.getPerPageNum(), search);
+		
+		logger.info("users is {}", users.toString());
 		
 		Map<String, Object> map = new HashMap<>();
 		map.put("users", users);
